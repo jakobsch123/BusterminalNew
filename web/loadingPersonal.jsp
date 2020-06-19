@@ -41,19 +41,20 @@
         String result;
         LadePersonal ladePersonal = new LadePersonal(loginBean);
         //LoginBean loginBean = (LoginBean) session.getAttribute("userSession");
-
         //out.print("hier" + loginBean.getLicenseNumber().toString());
         //out.print("Lizenznummer" + objLoginBean.getLicenseNumber().toString());
         result = ladePersonal.showErmKarte();
 
         if(result==null){
             out.print("<p>Sie besitzen noch keine Ermäßigungskarte!</p>\n" +
-                    "<button type=\"button\" onclick=\"ermKarte.reqErmKarte(loginBean)\">Jetz beantragen!</button>");
-            if(ladePersonal.reqErmKarte()){
+                    "<form name=\"reqErmKarte\" method=\"post\" action=\"reqErmKarte.jsp\">\n" +
+                    "        <input type=\"submit\" name=\"reqErmKarte\" value=\"reqErmKarte\"/>\n" +
+                    "    </form>");
+            /*if(ladePersonal.reqErmKarte()){
                 out.print("Erfolgreich reserviert");
             }else {
                 out.print("Konnte Keine Karte reservieren");
-            }
+            }*/
         }
         else {
             out.print("<p>Ermäßigungskartennummer: " + result + "</p>");
