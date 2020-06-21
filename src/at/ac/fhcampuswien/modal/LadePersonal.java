@@ -96,6 +96,39 @@ public class LadePersonal {
         return sqlResult;
     }
 
+    public boolean relErmKarte() {
+        Boolean sqlResult = false;
+
+        DBConnection dbConnection = DBConnection.getInstance();
+        Connection connection = dbConnection.getConnection();
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet;
+        String sqlQuery;
+
+        try {
+            sqlQuery = "UPDATE busterminal.angestellter SET Kartennummer = null WHERE (vierstellZahl = ?) and (GebDat = ?)";
+            preparedStatement = connection.prepareStatement(sqlQuery);
+            preparedStatement.setInt(1, Integer.parseInt(loginBean.getSvnr()));
+            preparedStatement.setString(2, loginBean.getBirthDate());
+            System.out.println(preparedStatement);
+            if(preparedStatement.executeUpdate()!=0){
+                System.out.println("updated");
+                sqlResult = true;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return sqlResult;
+    }
+
     public ArrayList<String> getTerminalOverwiev(){
         ArrayList<String> sqlResult = new ArrayList<>();
 

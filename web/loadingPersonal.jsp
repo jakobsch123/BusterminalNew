@@ -118,7 +118,10 @@
                     "    </form>");
         }
         else {
-            out.print("<p>Ermäßigungskartennummer: " + result + "</p>");
+            out.print("<p>Ermäßigungskartennummer: " + result + "</p>" +
+                    "<br><form name=\"relErmKarte\" method=\"post\" action=\"relErmKarte.jsp\">\n" +
+                    "        <input type=\"submit\" name=\"relErmKarte\" value=\"relErmKarte\"/>\n" +
+                    "    </form>");
         }
     %>
 </div>
