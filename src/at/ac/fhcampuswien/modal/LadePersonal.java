@@ -19,14 +19,14 @@ public class LadePersonal {
         this.loginBean = loginBean;
     }
 
-    public String showErmKarte() {
-        String ermKartenNummer = null;
+    public int showErmKarte() {
+        int ermKartenNummer = 0;
 
         DBConnection dbConnection = DBConnection.getInstance();
         Connection connection = dbConnection.getConnection();
         PreparedStatement preparedStatement = null;
         try {
-            sqlQuery = "select ermäßigungskarten.Kartennummer as karte from ermäßigungskarten inner join ladepersonal on ladepersonal.Kartennummer = ermäßigungskarten.Kartennummer where vierstellZahl=? and GebDat=?";
+            sqlQuery = "select Kartennummer from angestellter where vierstellZahl=? and GebDat=?";
             preparedStatement = connection.prepareStatement(sqlQuery);
             preparedStatement.setInt(1, Integer.parseInt(loginBean.getSvnr()));
             preparedStatement.setString(2, loginBean.getBirthDate());
@@ -35,7 +35,8 @@ public class LadePersonal {
             //System.out.println(resultSet.toString());
             if(resultSet.next()){
                 System.out.println("resultSet nicht leer");
-                ermKartenNummer = Integer.toString(resultSet.getInt("karte"));
+                //ermKartenNummer = Integer.toString(resultSet.getInt("Kartennummer"));
+                ermKartenNummer = resultSet.getInt("Kartennummer");
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -61,7 +62,7 @@ public class LadePersonal {
         String sqlQuery;
 
         try {
-            sqlQuery = "SELECT ermäßigungskarten.Kartennummer FROM busterminal.ladepersonal right join ermäßigungskarten on ermäßigungskarten.Kartennummer=ladepersonal.Kartennummer where ladepersonal.vierstellZahl is null";
+            sqlQuery = "SELECT ermäßigungskarten.Kartennummer FROM busterminal.angestellter right join ermäßigungskarten on ermäßigungskarten.Kartennummer=angestellter.Kartennummer where angestellter.vierstellZahl is null";
             preparedStatement = connection.prepareStatement(sqlQuery);
             //preparedStatement.setInt(1, Integer.parseInt(loginBean.getSvnr()));
             //preparedStatement.setString(2, loginBean.getBirthDate());
@@ -70,7 +71,7 @@ public class LadePersonal {
             //System.out.println(resultSet.toString());
             if(resultSet.next()){
                 System.out.println("resultSet nicht leer" + resultSet.getInt("Kartennummer"));
-                sqlQuery = "UPDATE busterminal.ladepersonal SET Kartennummer = ? WHERE (vierstellZahl = ?) and (GebDat = ?)";
+                sqlQuery = "UPDATE busterminal.angestellter SET Kartennummer = ? WHERE (vierstellZahl = ?) and (GebDat = ?)";
                 preparedStatement = connection.prepareStatement(sqlQuery);
                 preparedStatement.setInt(1, resultSet.getInt("Kartennummer"));
                 preparedStatement.setInt(2, Integer.parseInt(loginBean.getSvnr()));
@@ -115,6 +116,38 @@ public class LadePersonal {
                 sqlResult.add(Integer.toString(resultSet.getInt("Peronal_Anzahl")));
                 sqlResult.add(Integer.toString(resultSet.getInt("Kapazität")));
             }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return sqlResult;
+    }
+
+    public ArrayList<String> getPersonalData(){
+        ArrayList<String> sqlResult = new ArrayList<>();
+
+        DBConnection dbConnection = DBConnection.getInstance();
+        Connection connection = dbConnection.getConnection();
+        PreparedStatement preparedStatement = null;
+        try {
+            sqlQuery = "SELECT Vorname, Nachname, Ort FROM busterminal.person where vierstellZahl=? and GebDat=?";
+            preparedStatement = connection.prepareStatement(sqlQuery);
+            preparedStatement.setInt(1, Integer.parseInt(loginBean.getSvnr()));
+            preparedStatement.setString(2, loginBean.getBirthDate());
+            System.out.println(preparedStatement);
+            resultSet = preparedStatement.executeQuery();
+            //System.out.println(resultSet.toString());
+            resultSet.first();
+            sqlResult.add(resultSet.getString("Vorname"));
+            sqlResult.add(resultSet.getString("Nachname"));
+            sqlResult.add(resultSet.getString("Ort"));
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
